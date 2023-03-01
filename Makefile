@@ -6,7 +6,7 @@
 #    By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/27 14:37:38 by miandrad          #+#    #+#              #
-#    Updated: 2023/02/27 15:37:20 by miandrad         ###   ########.fr        #
+#    Updated: 2023/03/01 08:57:25 by miandrad         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,15 +26,13 @@ OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
-bonus:	$(BONUS)
-
 $(NAME): $(addprefix SRC/,$(OBJ))
 	@make -s -C ft_printf
 	@ar rcs $(LIB) $(addprefix SRC/,$(OBJ))
 	@$(CC) $(LIB) ft_printf/libftprintf.a -o $(NAME)
 
 run: $(NAME)
-	@./pipex abcdfghijklmnopqrstuvwxyz
+	@./pipex aa "grep a1" "wc -w" bb
 
 valgrind: $(NAME)
 	@valgrind --leak-check=full ./pipex
