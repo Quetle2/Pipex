@@ -6,7 +6,7 @@
 #    By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/27 14:37:38 by miandrad          #+#    #+#              #
-#    Updated: 2023/03/01 08:57:25 by miandrad         ###   ########.fr        #
+#    Updated: 2023/03/02 16:23:26 by miandrad         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,7 @@ run: $(NAME)
 	@./pipex aa "grep a1" "wc -w" bb
 
 valgrind: $(NAME)
-	@valgrind --leak-check=full ./pipex
+	@valgrind --leak-check=full ./pipex aa "grep a1" "wc -w" bb
 
 git: fclean
 	@git add .

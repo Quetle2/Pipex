@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:22 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/01 14:30:05 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/02 16:46:12 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ int	main(int ac, char **av, char **env)
 	char	*path;
 	char	**cmd1;
 	char	**cmd2;
+	char	*cmd1p;
+	char	*cmd2p;
 
 	if (ac != 5)
 		exit (0);
@@ -55,11 +57,10 @@ int	main(int ac, char **av, char **env)
 	av[4] = ft_strjoin("./", av[4]);
 	cmd1 = ft_split(av[2], ' ');
 	cmd2 = ft_split(av[3], ' ');
-	cmd1[0] = ft_strjoin("/", cmd1[0]);
-	cmd2[0] = ft_strjoin("/", cmd2[0]);
+	cmd1p = ft_strjoin("/", cmd1[0]);
+	cmd2p = ft_strjoin("/", cmd2[0]);
 	fdf = open(av[1], O_RDONLY);
-	path = check_cmd(cmd1[0], env);
-	ft_printf("%s\n", path);
+	path = check_cmd(cmd1p, env);
 	if (pipe(fd) == -1)
 		exit (0);
 	id = fork();
@@ -69,22 +70,17 @@ int	main(int ac, char **av, char **env)
 	{
 		dup2(fdf, 0);
 		dup2(fd[1], 1);
-		execve(path, cmd1, env);
+		execve(path, &cmd1[1], NULL);
 	}
-	close(fdf);
-	fdf = open(av[4], O_WRONLY);
-	path = check_cmd(cmd2[0], env);
-	fdf = open(av[1], O_RDONLY);
+	fdf = open(av[4], O_RDWR);
+	path = check_cmd(cmd2p, env);
 	id = fork();
 	if (id < 0)
 		exit (0);
 	if (id == 0)
 	{
-		// ft_printf("escrever\n");
-		close(fd[1]);
 		dup2(fd[0], 0);
 		dup2(fdf, 1);
-		execve(path, cmd2, env);
-		close(fd[0]);
+		execve(path, &cmd2[1], NULL);
 	}
 }
