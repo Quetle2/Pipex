@@ -28,7 +28,7 @@ char	*check_cmd(char *cmd1, char **env)
 			while (paths[i])
 			{
 				path = ft_strjoin(paths[i], cmd1);
-				if (access(path, X_OK))
+				if (!access(path, X_OK))
 					return (path);
 				i++;
 			}
