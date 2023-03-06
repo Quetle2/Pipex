@@ -6,7 +6,7 @@
 #    By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/27 14:37:38 by miandrad          #+#    #+#              #
-#    Updated: 2023/03/02 16:23:26 by miandrad         ###   ########.fr        #
+#    Updated: 2023/03/06 16:35:54 by miandrad         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,17 +22,21 @@ LIB = pipex.a
 
 SRC = pipex.c
 
+GET_SRC = get_next_line.c get_next_line_utils.c
+
 OBJ = $(SRC:.c=.o)
+
+GET_OBJ = $(GET_SRC:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(addprefix SRC/,$(OBJ))
+$(NAME): $(addprefix SRC/,$(OBJ)) $(addprefix get_next_line_100/,$(GET_OBJ))
 	@make -s -C ft_printf
-	@ar rcs $(LIB) $(addprefix SRC/,$(OBJ))
+	@ar rcs $(LIB) $(addprefix SRC/,$(OBJ)) $(addprefix get_next_line_100/,$(GET_OBJ))
 	@$(CC) $(LIB) ft_printf/libftprintf.a -o $(NAME)
 
 run: $(NAME)
-	@./pipex aa "grep a1" "wc -w" bb
+	@./pipex aa "wc -w" "wc -w" bb
 
 valgrind: $(NAME)
 	@valgrind --leak-check=full ./pipex aa "grep a1" "wc -w" bb

@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:22 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/02 16:46:12 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/06 16:55:47 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,12 @@ int	main(int ac, char **av, char **env)
 	{
 		dup2(fdf, 0);
 		dup2(fd[1], 1);
-		execve(path, &cmd1[1], NULL);
+		close(fdf);
+		close(fd[0]);
+		close(fd[1]);
+		execve(path, cmd1, NULL);
 	}
+	close(fdf);
 	fdf = open(av[4], O_RDWR);
 	path = check_cmd(cmd2p, env);
 	id = fork();
@@ -81,6 +85,6 @@ int	main(int ac, char **av, char **env)
 	{
 		dup2(fd[0], 0);
 		dup2(fdf, 1);
-		execve(path, &cmd2[1], NULL);
+		execve(path, cmd2, NULL);
 	}
 }
