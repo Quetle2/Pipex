@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:22 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/07 12:25:30 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/07 13:37:00 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,11 @@ char	*check_cmd(char *cmd1, char **env)
 				if (!access(path, X_OK))
 				{
 					i = 0;
-					while (paths[i++])
+					while (paths[i])
+					{
 						free(paths[i]);
+						i++;
+					}
 					free(paths);
 					return (path);
 				}
@@ -110,11 +113,17 @@ int	main(int ac, char **av, char **env)
 	free(cmd1p);
 	free(cmd2p);
 	i = 0;
-	while (cmd1[i++])
+	while (cmd1[i])
+	{
 		free(cmd1[i]);
+		i++;
+	}
 	free(cmd1);
 	i = 0;
-	while (cmd2[i++])
+	while (cmd2[i])
+	{
 		free(cmd2[i]);
+		i++;
+	}
 	free(cmd2);
 }
