@@ -6,7 +6,7 @@
 #    By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/27 14:37:38 by miandrad          #+#    #+#              #
-#    Updated: 2023/03/06 16:35:54 by miandrad         ###   ########.fr        #
+#    Updated: 2023/03/07 12:21:49 by miandrad         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,10 +36,10 @@ $(NAME): $(addprefix SRC/,$(OBJ)) $(addprefix get_next_line_100/,$(GET_OBJ))
 	@$(CC) $(LIB) ft_printf/libftprintf.a -o $(NAME)
 
 run: $(NAME)
-	@./pipex aa "wc -w" "wc -w" bb
+	@./pipex aa "cat" "cat" bb
 
 valgrind: $(NAME)
-	@valgrind --leak-check=full ./pipex aa "grep a1" "wc -w" bb
+	@valgrind --leak-check=yes --leak-check=full ./pipex aa "grep a1" "wc -w" bb
 
 git: fclean
 	@git add .

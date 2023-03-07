@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:11 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/06 16:33:14 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/07 11:58:02 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "ft_printf/ft_printf.h"
 # include "get_next_line_100/get_next_line.h"
 # include <fcntl.h>
+# include <sys/wait.h>
 
 typedef struct s_cmd
 {

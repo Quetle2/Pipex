@@ -1,3 +1,1 @@
-/nfs/homes/miandrad/bin/wc
-wc
--w
+0
