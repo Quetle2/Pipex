@@ -6,7 +6,7 @@
 #    By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/27 14:37:38 by miandrad          #+#    #+#              #
-#    Updated: 2023/03/07 17:08:55 by miandrad         ###   ########.fr        #
+#    Updated: 2023/03/07 17:09:40 by miandrad         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,11 +46,11 @@ git: fclean
 	@git commit
 	@git push
 	@clear
-	@echo "                                   "
-	@echo "                                   "
-	@echo " -------Commited and Pushed------- "
-	@echo "                                   "
-	@echo "                                   "
+	@echo "                                                  "
+	@echo "                                                  "
+	@echo "         -------Commited and Pushed-------        "
+	@echo "                                                  "
+	@echo "                                                  "
 
 clean: 
 	@make clean -s -C ft_printf
