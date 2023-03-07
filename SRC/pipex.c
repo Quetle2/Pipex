@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:22 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/07 13:37:00 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/07 16:11:20 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,34 +22,28 @@ char	*check_cmd(char *cmd1, char **env)
 	while (env[i])
 	{
 		if (ft_strnstr(env[i], "PATH=", 6))
-		{
-			paths = ft_split(&env[i][5], ':');
-			i = 0;
-			while (paths[i])
-			{
-				path = ft_strjoin(paths[i], cmd1);
-				if (!access(path, X_OK))
-				{
-					i = 0;
-					while (paths[i])
-					{
-						free(paths[i]);
-						i++;
-					}
-					free(paths);
-					return (path);
-				}
-				free(path);
-				i++;
-			}
-		}
+			break ;
+		i++;
+	}
+	paths = ft_split(&env[i][5], ':');
+	i = 0;
+	while (paths[i])
+	{
+		path = ft_strjoin(paths[i], cmd1);
+		if (!access(path, X_OK))
+			break ;
+		free(path);
+		path = NULL;
 		i++;
 	}
 	i = 0;
-	while (paths[i++])
+	while (paths[i])
+	{
 		free(paths[i]);
+		i++;
+	}
 	free(paths);
-	return (NULL);
+	return (path);
 }
 
 int	main(int ac, char **av, char **env)
@@ -57,8 +51,9 @@ int	main(int ac, char **av, char **env)
 	int		i;
 	int		id;
 	int		fd[2];
-	int		fdf;
-	char	*path;
+	int		fdf[2];
+	char	*path1;
+	char	*path2;
 	char	**cmd1;
 	char	**cmd2;
 	char	*cmd1p;
@@ -74,40 +69,48 @@ int	main(int ac, char **av, char **env)
 	cmd2 = ft_split(av[3], ' ');
 	cmd1p = ft_strjoin("/", cmd1[0]);
 	cmd2p = ft_strjoin("/", cmd2[0]);
-	fdf = open(av[1], O_RDONLY);
-	path = check_cmd(cmd1p, env);
+	fdf[0] = open(av[1], O_RDONLY);
+	fdf[1] = open(av[4], O_WRONLY | O_TRUNC | O_CREAT);
+	if (fdf[0] == -1 || fdf[1] == -1)
+		return (1);
+	path1 = check_cmd(cmd1p, env);
+	if (path1 == NULL)
+		perror("First command invalid");
+	path2 = check_cmd(cmd2p, env);
+	if (path2 == NULL)
+		perror("Second command invalid");
 	if (pipe(fd) == -1)
-		exit (0);
+		exit (2);
 	id = fork();
 	if (id < 0)
-		exit (0);
+		exit (2);
 	if (id == 0)
 	{
-		dup2(fdf, 0);
+		dup2(fdf[0], 0);
 		dup2(fd[1], 1);
 		close(fd[1]);
 		close(fd[0]);
-		close(fdf);
-		execve(path, cmd1, NULL);
+		close(fdf[0]);
+		execve(path1, cmd1, NULL);
 	}
-	close(fdf);
-	fdf = open(av[4], O_RDWR | O_TRUNC);
-	free(path);
-	path = check_cmd(cmd2p, env);
+	close(fdf[0]);
+	close(fd[1]);
+	free(path1);
 	id = fork();
 	if (id < 0)
 		exit (0);
 	if (id == 0)
 	{
+		dup2(fdf[1], 1);
 		dup2(fd[0], 0);
-		dup2(fdf, 1);
-		close(fd[1]);
 		close(fd[0]);
-		close(fdf);
-		execve(path, cmd2, NULL);
+		close(fdf[1]);
+		execve(path2, cmd2, NULL);
 	}
+	close(fd[0]);
+	close(fdf[1]);
 	wait(NULL);
-	free(path);
+	free(path2);
 	free(av[1]);
 	free(av[4]);
 	free(cmd1p);
