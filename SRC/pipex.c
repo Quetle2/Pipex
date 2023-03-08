@@ -6,11 +6,40 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:22 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/07 16:11:20 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/08 15:22:00 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
+
+void	frees(t_cmd *vars, char **av, int flag)
+{
+	int		i;
+
+	if (flag != 4 && flag != 5)
+		free(vars->path2);
+	if (flag != 5)
+		free(vars->path1);
+	free(av[1]);
+	free(av[4]);
+	free(vars->cmd1p);
+	free(vars->cmd2p);
+	i = 0;
+	while (vars->cmd1[i])
+	{
+		free(vars->cmd1[i]);
+		i++;
+	}
+	free(vars->cmd1);
+	i = 0;
+	while (vars->cmd2[i])
+	{
+		free(vars->cmd2[i]);
+		i++;
+	}
+	free(vars->cmd2);
+	exit(flag);
+}
 
 char	*check_cmd(char *cmd1, char **env)
 {
@@ -48,16 +77,10 @@ char	*check_cmd(char *cmd1, char **env)
 
 int	main(int ac, char **av, char **env)
 {
-	int		i;
 	int		id;
 	int		fd[2];
 	int		fdf[2];
-	char	*path1;
-	char	*path2;
-	char	**cmd1;
-	char	**cmd2;
-	char	*cmd1p;
-	char	*cmd2p;
+	t_cmd	vars;
 
 	if (ac != 5)
 		exit (0);
@@ -65,25 +88,25 @@ int	main(int ac, char **av, char **env)
 		exit (0);
 	av[1] = ft_strjoin("./", av[1]);
 	av[4] = ft_strjoin("./", av[4]);
-	cmd1 = ft_split(av[2], ' ');
-	cmd2 = ft_split(av[3], ' ');
-	cmd1p = ft_strjoin("/", cmd1[0]);
-	cmd2p = ft_strjoin("/", cmd2[0]);
+	vars.cmd1 = ft_split(av[2], ' ');
+	vars.cmd2 = ft_split(av[3], ' ');
+	vars.cmd1p = ft_strjoin("/", vars.cmd1[0]);
+	vars.cmd2p = ft_strjoin("/", vars.cmd2[0]);
+	vars.path1 = check_cmd(vars.cmd1p, env);
+	if (vars.path1 == NULL)
+		frees(&vars, av, 5);
+	vars.path2 = check_cmd(vars.cmd2p, env);
+	if (vars.path2 == NULL)
+		frees(&vars, av, 4);
 	fdf[0] = open(av[1], O_RDONLY);
 	fdf[1] = open(av[4], O_WRONLY | O_TRUNC | O_CREAT);
 	if (fdf[0] == -1 || fdf[1] == -1)
-		return (1);
-	path1 = check_cmd(cmd1p, env);
-	if (path1 == NULL)
-		perror("First command invalid");
-	path2 = check_cmd(cmd2p, env);
-	if (path2 == NULL)
-		perror("Second command invalid");
+		frees(&vars, av, 3);
 	if (pipe(fd) == -1)
-		exit (2);
+		frees(&vars, av, 2);
 	id = fork();
 	if (id < 0)
-		exit (2);
+		frees(&vars, av, 1);
 	if (id == 0)
 	{
 		dup2(fdf[0], 0);
@@ -91,42 +114,23 @@ int	main(int ac, char **av, char **env)
 		close(fd[1]);
 		close(fd[0]);
 		close(fdf[0]);
-		execve(path1, cmd1, NULL);
+		execve(vars.path1, vars.cmd1, env);
 	}
 	close(fdf[0]);
 	close(fd[1]);
-	free(path1);
 	id = fork();
 	if (id < 0)
-		exit (0);
+		frees(&vars, av, 1);
 	if (id == 0)
 	{
 		dup2(fdf[1], 1);
 		dup2(fd[0], 0);
 		close(fd[0]);
 		close(fdf[1]);
-		execve(path2, cmd2, NULL);
+		execve(vars.path2, vars.cmd2, env);
 	}
 	close(fd[0]);
 	close(fdf[1]);
 	wait(NULL);
-	free(path2);
-	free(av[1]);
-	free(av[4]);
-	free(cmd1p);
-	free(cmd2p);
-	i = 0;
-	while (cmd1[i])
-	{
-		free(cmd1[i]);
-		i++;
-	}
-	free(cmd1);
-	i = 0;
-	while (cmd2[i])
-	{
-		free(cmd2[i]);
-		i++;
-	}
-	free(cmd2);
+	frees(&vars, av, 0);
 }

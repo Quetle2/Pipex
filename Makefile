@@ -6,7 +6,7 @@
 #    By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/27 14:37:38 by miandrad          #+#    #+#              #
-#    Updated: 2023/03/07 17:09:40 by miandrad         ###   ########.fr        #
+#    Updated: 2023/03/08 14:09:58 by miandrad         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@ run: $(NAME)
 	@./pipex aa "cat" "wc -m" bb
 
 valgrind: $(NAME)
-	@valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./pipex aa "grep a1" "wc -w" bb
+	@valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./pipex aa "notexisting" "wc" bb
 
 git: fclean
 	@git add .
