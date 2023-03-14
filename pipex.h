@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:11 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/06 16:33:14 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/08 14:01:59 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,20 @@
 # include "ft_printf/ft_printf.h"
 # include "get_next_line_100/get_next_line.h"
 # include <fcntl.h>
+# include <sys/wait.h>
 
 typedef struct s_cmd
 {
-	char	**cmd;
+	char	*path1;
+	char	*path2;
+	char	**cmd1;
+	char	**cmd2;
+	char	*cmd1p;
+	char	*cmd2p;
 }t_cmd;
 
-
-
+void	frees(t_cmd *vars, char **av, int flag);
+char	*check_cmd(char *cmd1, char **env);
 
 
 
