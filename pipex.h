@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:11 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/08 14:01:59 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/13 14:38:09 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ typedef struct s_cmd
 	char	*cmd2p;
 }t_cmd;
 
-void	frees(t_cmd *vars, char **av, int flag);
+void	frees(t_cmd *vars, char **av);
 char	*check_cmd(char *cmd1, char **env);
 
 
