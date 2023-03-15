@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:22 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/14 15:23:22 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/15 16:24:06 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,12 @@ void	first_process(t_cmd *vars, char **av, int *fdf, int *fd)
 {
 	int	id;
 
+	fdf[0] = open(av[1], O_RDONLY);
+	if (fdf[0] == -1)
+		return ;
 	id = fork();
 	if (id < 0)
-		frees(vars, av);
+		return ;
 	if (id == 0)
 	{
 		dup2(fdf[0], 0);
@@ -31,6 +34,28 @@ void	first_process(t_cmd *vars, char **av, int *fdf, int *fd)
 		else
 			execve("a", vars->cmd1, NULL);
 		exit(0);
+	}
+	close(fdf[0]);
+	close(fd[1]);
+}
+
+void	second_process(t_cmd *vars, char **av, int *fdf, int *fd)
+{
+	int	id;
+
+	fdf[1] = open(av[4], O_WRONLY | O_TRUNC | O_CREAT, 0000644);
+	if (fdf[1] == -1)
+		return ;
+	id = fork();
+	if (id < 0)
+		return ;
+	if (id == 0)
+	{
+		dup2(fdf[1], 1);
+		dup2(fd[0], 0);
+		close(fd[0]);
+		close(fdf[1]);
+		execve(vars->path2, vars->cmd2, NULL);
 	}
 	close(fdf[0]);
 	close(fd[1]);
@@ -100,7 +125,6 @@ char	*check_cmd(char *cmd1, char **env)
 
 int	main(int ac, char **av, char **env)
 {
-	int		id;
 	int		fd[2];
 	int		fdf[2];
 	t_cmd	vars;
@@ -117,38 +141,13 @@ int	main(int ac, char **av, char **env)
 	vars.cmd2p = ft_strjoin("/", vars.cmd2[0]);
 	vars.path1 = check_cmd(vars.cmd1p, env);
 	vars.path2 = check_cmd(vars.cmd2p, env);
-	fdf[0] = open(av[1], O_RDONLY);
-	fdf[1] = open(av[4], O_WRONLY | O_TRUNC | O_CREAT);
-	if (fdf[0] == -1 || fdf[1] == -1)
-	{
-		frees(&vars, av);
-		return (1);
-	}
 	if (pipe(fd) == -1)
 	{
 		frees(&vars, av);
 		return (1);
 	}
 	first_process(&vars, av, fdf, fd);
-	if (vars.path2 == NULL)
-	{
-		frees(&vars, av);
-		return (1);
-	}
-	id = fork();
-	if (id < 0)
-	{
-		frees(&vars, av);
-		return (1);
-	}
-	if (id == 0)
-	{
-		dup2(fdf[1], 1);
-		dup2(fd[0], 0);
-		close(fd[0]);
-		close(fdf[1]);
-		execve(vars.path2, vars.cmd2, env);
-	}
+	second_process(&vars, av, fdf, fd);
 	dup2(fdf[1], 1);
 	dup2(fd[0], 0);
 	close(fd[0]);
