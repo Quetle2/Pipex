@@ -1,10 +1,1 @@
-Makefile
-SRC
-aa
-bb
-ft_printf
-get_next_line_100
-pipex
-pipex-tester
-pipex.a
-pipex.h
+aqui
