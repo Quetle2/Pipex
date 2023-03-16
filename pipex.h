@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:11 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/16 13:25:40 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/16 17:57:39 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ typedef struct s_fd
 
 typedef struct s_cmd
 {
+	int		id1;
+	int		id2;
 	char	*path1;
 	char	*path2;
 	char	**cmd1;

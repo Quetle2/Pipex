@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:22 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/16 14:54:44 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/16 18:02:45 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,19 @@
 
 void	first_process(t_cmd *vars, char **av, int *fdf, int *fd)
 {
-	int	id;
-
 	fdf[0] = open(av[1], O_RDONLY);
 	if (fdf[0] == -1)
 		return ;
-	id = fork();
-	if (id < 0)
+	vars->id1 = fork();
+	if (vars->id1 < 0)
 		return ;
-	if (id == 0)
+	if (vars->id1 == 0)
 	{
 		dup2(fdf[0], 0);
 		dup2(fd[1], 1);
 		close(fd[1]);
 		close(fd[0]);
 		close(fdf[0]);
-		ft_printf("aqui\n\0");
 		if (vars->path1 != NULL)
 			execve(vars->path1, vars->cmd1, NULL);
 		exit(0);
@@ -40,27 +37,24 @@ void	first_process(t_cmd *vars, char **av, int *fdf, int *fd)
 
 void	second_process(t_cmd *vars, char **av, int *fdf, int *fd)
 {
-	int	id;
-
 	fdf[1] = open(av[4], O_WRONLY | O_TRUNC | O_CREAT, 0000644);
 	if (fdf[1] == -1)
 		return ;
-	id = fork();
-	if (id < 0)
+	vars->id2 = fork();
+	if (vars->id2 < 0)
 		return ;
-	if (id == 0)
+	if (vars->id2 == 0)
 	{
 		dup2(fdf[1], 1);
 		dup2(fd[0], 0);
 		close(fd[0]);
 		close(fdf[1]);
-		ft_printf("aqui\n");
 		if (vars->path2)
 			execve(vars->path2, vars->cmd2, NULL);
 		exit(0);
 	}
-	close(fdf[0]);
-	close(fd[1]);
+	close(fdf[1]);
+	close(fd[0]);
 }
 
 void	frees(t_cmd *vars, char **av)
@@ -153,6 +147,6 @@ int	main(int ac, char **av, char **env)
 	dup2(fd.fd[0], 0);
 	close(fd.fd[0]);
 	close(fd.fdf[1]);
-	wait(NULL);
+	waitpid(vars.id1, NULL, 0);
 	frees(&vars, av);
 }
