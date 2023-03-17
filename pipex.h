@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:11 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/16 17:57:39 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/17 16:31:38 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,5 @@ typedef struct s_cmd
 
 void	frees(t_cmd *vars, char **av);
 char	*check_cmd(char *cmd1, char **env);
-
-
 
 #endif

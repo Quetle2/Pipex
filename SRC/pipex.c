@@ -6,55 +6,64 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:22 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/16 18:02:45 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/17 18:29:42 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
 
-void	first_process(t_cmd *vars, char **av, int *fdf, int *fd)
+void	first_process(t_cmd *vars, char **av, t_fd *fd, char **env)
 {
-	fdf[0] = open(av[1], O_RDONLY);
-	if (fdf[0] == -1)
+	vars->path1 = check_cmd(vars->cmd1p, env);
+	fd->fdf[0] = open(av[1], O_RDONLY);
+	if (fd->fdf[0] == -1)
+	{
+		perror(&av[1][2]);
 		return ;
+	}
+	if (vars->path1 == NULL)
+		ft_printf("%s: command not found\n", &vars->cmd1p[1]);
 	vars->id1 = fork();
 	if (vars->id1 < 0)
 		return ;
 	if (vars->id1 == 0)
 	{
-		dup2(fdf[0], 0);
-		dup2(fd[1], 1);
-		close(fd[1]);
-		close(fd[0]);
-		close(fdf[0]);
+		dup2(fd->fdf[0], 0);
+		dup2(fd->fd[1], 1);
+		close(fd->fd[1]);
+		close(fd->fd[0]);
+		close(fd->fdf[0]);
 		if (vars->path1 != NULL)
-			execve(vars->path1, vars->cmd1, NULL);
+			execve(vars->path1, vars->cmd1, env);
 		exit(0);
 	}
-	close(fdf[0]);
-	close(fd[1]);
+	close(fd->fdf[0]);
+	close(fd->fd[1]);
 }
 
-void	second_process(t_cmd *vars, char **av, int *fdf, int *fd)
+void	second_process(t_cmd *vars, char **av, t_fd *fd, char **env)
 {
-	fdf[1] = open(av[4], O_WRONLY | O_TRUNC | O_CREAT, 0000644);
-	if (fdf[1] == -1)
+	vars->path2 = check_cmd(vars->cmd2p, env);
+	fd->fdf[1] = open(av[4], O_WRONLY | O_TRUNC | O_CREAT, 0000644);
+	if (fd->fdf[1] == -1)
 		return ;
+	if (vars->path2 == NULL)
+		ft_printf("%s: command not found\n", &vars->cmd2p[1]);
 	vars->id2 = fork();
 	if (vars->id2 < 0)
 		return ;
 	if (vars->id2 == 0)
 	{
-		dup2(fdf[1], 1);
-		dup2(fd[0], 0);
-		close(fd[0]);
-		close(fdf[1]);
+		dup2(fd->fdf[1], 1);
+		dup2(fd->fd[0], 0);
+		close(fd->fd[0]);
+		close(fd->fdf[1]);
 		if (vars->path2)
-			execve(vars->path2, vars->cmd2, NULL);
+			execve(vars->path2, vars->cmd2, env);
 		exit(0);
 	}
-	close(fdf[1]);
-	close(fd[0]);
+	close(fd->fdf[1]);
+	close(fd->fd[0]);
 }
 
 void	frees(t_cmd *vars, char **av)
@@ -92,12 +101,9 @@ char	*check_cmd(char *cmd1, char **env)
 	char	*path;
 
 	i = 0;
-	while (env[i])
-	{
+	while (env[i++])
 		if (ft_strnstr(env[i], "PATH=", 6))
 			break ;
-		i++;
-	}
 	paths = ft_split(&env[i][5], ':');
 	i = 0;
 	while (paths[i])
@@ -111,10 +117,7 @@ char	*check_cmd(char *cmd1, char **env)
 	}
 	i = 0;
 	while (paths[i])
-	{
-		free(paths[i]);
-		i++;
-	}
+		free(paths[i++]);
 	free(paths);
 	return (path);
 }
@@ -134,17 +137,13 @@ int	main(int ac, char **av, char **env)
 	vars.cmd2 = ft_split(av[3], ' ');
 	vars.cmd1p = ft_strjoin("/", vars.cmd1[0]);
 	vars.cmd2p = ft_strjoin("/", vars.cmd2[0]);
-	vars.path1 = check_cmd(vars.cmd1p, env);
-	vars.path2 = check_cmd(vars.cmd2p, env);
 	if (pipe(fd.fd) == -1)
 	{
 		frees(&vars, av);
 		return (1);
 	}
-	first_process(&vars, av, fd.fdf, fd.fd);
-	second_process(&vars, av, fd.fdf, fd.fd);
-	dup2(fd.fdf[1], 1);
-	dup2(fd.fd[0], 0);
+	first_process(&vars, av, &fd, env);
+	second_process(&vars, av, &fd, env);
 	close(fd.fd[0]);
 	close(fd.fdf[1]);
 	waitpid(vars.id1, NULL, 0);
