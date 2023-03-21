@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:22 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/17 18:29:42 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/21 17:53:21 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	first_process(t_cmd *vars, char **av, t_fd *fd, char **env)
 		close(fd->fdf[0]);
 		if (vars->path1 != NULL)
 			execve(vars->path1, vars->cmd1, env);
-		exit(0);
+		exit(2);
 	}
 	close(fd->fdf[0]);
 	close(fd->fd[1]);
@@ -57,10 +57,11 @@ void	second_process(t_cmd *vars, char **av, t_fd *fd, char **env)
 		dup2(fd->fdf[1], 1);
 		dup2(fd->fd[0], 0);
 		close(fd->fd[0]);
+		close(fd->fd[1]);
 		close(fd->fdf[1]);
 		if (vars->path2)
 			execve(vars->path2, vars->cmd2, env);
-		exit(0);
+		exit(2);
 	}
 	close(fd->fdf[1]);
 	close(fd->fd[0]);
@@ -129,23 +130,23 @@ int	main(int ac, char **av, char **env)
 
 	if (ac != 5)
 		exit (0);
+	if (ac != 5)
+		ft_printf("Invalid number of arguments");
 	if (av == NULL || av[1] == NULL)
-		exit (0);
+		exit (1);
 	av[1] = ft_strjoin("./", av[1]);
 	av[4] = ft_strjoin("./", av[4]);
 	vars.cmd1 = ft_split(av[2], ' ');
 	vars.cmd2 = ft_split(av[3], ' ');
 	vars.cmd1p = ft_strjoin("/", vars.cmd1[0]);
 	vars.cmd2p = ft_strjoin("/", vars.cmd2[0]);
-	if (pipe(fd.fd) == -1)
+	if (pipe(fd.fd) != -1)
 	{
-		frees(&vars, av);
-		return (1);
+		first_process(&vars, av, &fd, env);
+		second_process(&vars, av, &fd, env);
+		close(fd.fd[0]);
+		close(fd.fdf[1]);
+		waitpid(vars.id1, NULL, 0);
 	}
-	first_process(&vars, av, &fd, env);
-	second_process(&vars, av, &fd, env);
-	close(fd.fd[0]);
-	close(fd.fdf[1]);
-	waitpid(vars.id1, NULL, 0);
 	frees(&vars, av);
 }
