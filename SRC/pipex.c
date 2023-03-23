@@ -6,7 +6,7 @@
 /*   By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:09:22 by miandrad          #+#    #+#             */
-/*   Updated: 2023/03/21 17:53:21 by miandrad         ###   ########.fr       */
+/*   Updated: 2023/03/23 13:50:13 by miandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,10 @@ void	second_process(t_cmd *vars, char **av, t_fd *fd, char **env)
 	vars->path2 = check_cmd(vars->cmd2p, env);
 	fd->fdf[1] = open(av[4], O_WRONLY | O_TRUNC | O_CREAT, 0000644);
 	if (fd->fdf[1] == -1)
+	{
+		perror(&av[4][2]);
 		return ;
+	}
 	if (vars->path2 == NULL)
 		ft_printf("%s: command not found\n", &vars->cmd2p[1]);
 	vars->id2 = fork();
@@ -129,9 +132,9 @@ int	main(int ac, char **av, char **env)
 	t_cmd	vars;
 
 	if (ac != 5)
-		exit (0);
+		ft_printf("Invalid number of arguments\n");
 	if (ac != 5)
-		ft_printf("Invalid number of arguments");
+		exit (0);
 	if (av == NULL || av[1] == NULL)
 		exit (1);
 	av[1] = ft_strjoin("./", av[1]);

@@ -6,7 +6,7 @@
 #    By: miandrad <miandrad@student.42lisboa.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/27 14:37:38 by miandrad          #+#    #+#              #
-#    Updated: 2023/03/21 13:29:08 by miandrad         ###   ########.fr        #
+#    Updated: 2023/03/23 13:47:54 by miandrad         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CC = cc
 
 RM = rm -rf
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 
 LIB = pipex.a
 
@@ -33,7 +33,7 @@ all: $(NAME)
 $(NAME): $(addprefix SRC/,$(OBJ)) $(addprefix get_next_line_100/,$(GET_OBJ))
 	@make -s -C ft_printf
 	@ar rcs $(LIB) $(addprefix SRC/,$(OBJ)) $(addprefix get_next_line_100/,$(GET_OBJ))
-	@$(CC) $(LIB) ft_printf/libftprintf.a -o $(NAME)
+	$(CC) $(LIB) ft_printf/libftprintf.a -o $(NAME)
 
 run: $(NAME)
 	@./pipex aa "cat" "ls" bb
